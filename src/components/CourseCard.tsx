@@ -1,3 +1,5 @@
+// 1. Обов'язково імпортуємо хук з React
+import { useState } from 'react';
 import clsx from 'clsx'; // npm i clsx
 
 interface CourseCardProps {
@@ -13,6 +15,10 @@ export function CourseCard({
   credits = 0,
   isActive,
 }: CourseCardProps) {
+  // 2. Ініціалізуємо стейт. За замовчуванням деталі приховані (false)
+  // Викликаємо на самому верхньому рівні компонента!
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div
       className={clsx(
@@ -21,24 +27,24 @@ export function CourseCard({
       )}
     >
       <h3 className="text-xl font-bold text-gray-800">{title}</h3>
-      <p className="text-gray-600 mt-2">Викладач: {teacher}</p>
-      <p className="text-gray-600 mt-2">Кредити: {credits}</p>
 
-      <div
-        className={clsx(
-          'mt-4 font-semibold text-sm px-3 py-1 inline-block rounded-full',
-          isActive
-            ? 'bg-green-200 text-green-800'
-            : 'bg-gray-200 text-gray-700',
-        )}
+      {/* 3. Кнопка, яка викликає функцію оновлення стейту */}
+      {/* Ми передаємо нове значення, протилежне поточному (!isOpen) */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="text-blue-600 underline text-sm mt-2 hover:text-blue-800"
       >
-        {isActive ? 'В процесі вивчення' : 'Курс завершено'}
-      </div>
+        {isOpen ? 'Сховати деталі' : 'Показати деталі'}
+      </button>
 
-      {isActive && (
-        <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
-          Перейти до матеріалів
-        </button>
+      {isOpen && (
+        <div className="mt-3 p-3 bg-white/50 rounded border border-gray-200">
+          <p className="text-gray-600 text-sm">Викладач: {teacher}</p>
+          <p className="text-gray-600 mt-2">Кредити: {credits}</p>
+          <p className="text-gray-600 text-sm mt-1">
+            Статус: {isActive ? 'В процесі' : 'Завершено'}
+          </p>
+        </div>
       )}
     </div>
   );
