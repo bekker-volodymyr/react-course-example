@@ -2,33 +2,37 @@ import { useState } from 'react';
 import { Header } from './components/Header';
 import { CourseCard } from './components/CourseCard';
 import { Section } from './components/Section';
+import { CourseProgress } from './components/CourseProgression';
+import { FocusTimer } from './components/FocusTimer';
 
-// Масив даних
 const initialCourses = [
   {
     id: 'c1',
     title: 'Основи HTML/CSS',
     teacher: 'Олексій Іванов',
     isActive: false,
+    completedLessons: 12,
+    totalLessons: 12,
   },
   {
     id: 'c2',
     title: 'JavaScript Advanced',
     teacher: 'Марія Коваленко',
-    credits: 10,
     isActive: true,
+    completedLessons: 5,
+    totalLessons: 20,
   },
   {
     id: 'c3',
     title: 'React Frontend',
     teacher: 'Володимир Юркевич',
-    credits: 10,
     isActive: true,
+    completedLessons: 2,
+    totalLessons: 15,
   },
 ];
 
 function App() {
-  // Стейт для зберігання тексту пошуку
   const [searchQuery, setSearchQuery] = useState('');
 
   const [userProfile, setUserProfile] = useState({
@@ -39,14 +43,31 @@ function App() {
 
   const handleTransfer = () => {
     setUserProfile({
-      ...userProfile, // Копіюємо всі існуючі поля (name, isOnline)
-      group: 'FE-Advanced', // Перезаписуємо лише групу
+      ...userProfile,
+      group: 'FE-Advanced',
     });
   };
 
-  const filteredCourses = initialCourses.filter((course) =>
-    course.title.toLowerCase().includes(searchQuery.toLowerCase()),
+  // Підняті стейти
+  const [courses, setCourses] = useState(initialCourses);
+
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+
+  const selectedCourse = courses.find((c) => c.id === selectedCourseId);
+
+  const filteredCourses = courses.filter((c) =>
+    c.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  const handleCompleteLesson = (courseId: string) => {
+    setCourses((prevCourses) =>
+      prevCourses.map((course) =>
+        course.id === courseId
+          ? { ...course, completedLessons: course.completedLessons + 1 }
+          : course,
+      ),
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -66,38 +87,50 @@ function App() {
           </button>
         </div>
 
-        <Section title="Мої поточні курси">
-          {/* Керований інпут */}
-          <div className="mb-6">
-            <input
-              type="text"
-              placeholder="Пошук курсів..."
-              value={searchQuery} // Зв'язуємо значення зі стейтом
-              onChange={(e) => setSearchQuery(e.target.value)} // Оновлюємо стейт при вводі
-              className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <div className="flex flex-col md:flex-row gap-6 items-start">
+          <aside className="w-full md:w-1/3 flex flex-col gap-6">
+            <CourseProgress
+              course={selectedCourse}
+              onCompleteLesson={() =>
+                selectedCourseId && handleCompleteLesson(selectedCourseId)
+              }
             />
-            <p className="text-sm text-gray-500 mt-2">
-              Ви шукаєте: {searchQuery}
+
+            <FocusTimer />
+          </aside>
+
+          <Section title="Мої поточні курси">
+            <div className="mb-6">
+              <input
+                type="text"
+                placeholder="Пошук курсів..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="text-sm text-gray-500 mt-2">
+                Ви шукаєте: {searchQuery}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-4">
+              {filteredCourses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  {...course}
+                  isSelected={selectedCourseId === course.id}
+                  onSelect={() => setSelectedCourseId(course.id)}
+                />
+              ))}
+            </div>
+          </Section>
+
+          <Section title="Останні оцінки">
+            <p className="text-gray-500 italic">
+              Тут скоро будуть ваші оцінки за домашки...
             </p>
-          </div>
-
-          <div className="flex flex-wrap gap-4">
-            {/* Рендеримо вже відфільтрований масив */}
-            {filteredCourses.length > 0 ? (
-              filteredCourses.map((course) => (
-                <CourseCard key={course.id} {...course} />
-              ))
-            ) : (
-              <p className="text-gray-500">Курси не знайдено 😢</p>
-            )}
-          </div>
-        </Section>
-
-        <Section title="Останні оцінки">
-          <p className="text-gray-500 italic">
-            Тут скоро будуть ваші оцінки за домашки...
-          </p>
-        </Section>
+          </Section>
+        </div>
       </div>
     </div>
   );
