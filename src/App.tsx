@@ -1,102 +1,62 @@
 import { useState } from 'react';
-import { Header } from './components/Header';
+import Header from './components/Header';
 import { CourseCard } from './components/CourseCard';
 import { Section } from './components/Section';
-import { CourseProgress } from './components/CourseProgression';
-import { FocusTimer } from './components/FocusTimer';
+import { CourseProgress } from './components/CourseProgress';
 
-const initialCourses = [
-  {
-    id: 'c1',
-    title: 'Основи HTML/CSS',
-    teacher: 'Олексій Іванов',
-    isActive: false,
-    completedLessons: 12,
-    totalLessons: 12,
-  },
-  {
-    id: 'c2',
-    title: 'JavaScript Advanced',
-    teacher: 'Марія Коваленко',
-    isActive: true,
-    completedLessons: 5,
-    totalLessons: 20,
-  },
-  {
-    id: 'c3',
-    title: 'React Frontend',
-    teacher: 'Володимир Юркевич',
-    isActive: true,
-    completedLessons: 2,
-    totalLessons: 15,
-  },
-];
+import { type CourseDetails, courseDetailsData } from './data/courses';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [userProfile, setUserProfile] = useState({
-    name: 'Володимир',
-    group: 'FE-1',
-    isOnline: true,
-  });
-
-  const handleTransfer = () => {
-    setUserProfile({
-      ...userProfile,
-      group: 'FE-Advanced',
-    });
-  };
-
-  // Підняті стейти
-  const [courses, setCourses] = useState(initialCourses);
+  const [courses, setCourses] = useState(courseDetailsData);
 
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
-
-  const selectedCourse = courses.find((c) => c.id === selectedCourseId);
 
   const filteredCourses = courses.filter((c) =>
     c.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const handleCompleteLesson = (courseId: string) => {
+  const handleToggleModule = (courseId: string, targetModuleName: string) => {
     setCourses((prevCourses) =>
-      prevCourses.map((course) =>
-        course.id === courseId
-          ? { ...course, completedLessons: course.completedLessons + 1 }
-          : course,
-      ),
+      prevCourses.map((course) => {
+        // Якщо це не наш курс — повертаємо без змін
+        if (course.id !== courseId) return course;
+
+        // 1. Оновлюємо статус модулів усередині курсу
+        const updatedModules = course.modules.map((mod) => {
+          if (mod.name === targetModuleName) {
+            return { ...mod, isCompleted: !mod.isCompleted };
+          }
+          return mod;
+        });
+
+        // 2. Перераховуємо кількість пройдених модулів
+        const completedCount = updatedModules.filter(
+          (mod) => mod.isCompleted,
+        ).length;
+
+        // 3. Повертаємо новий об'єкт курсу зі збереженням незмінних полів (імутабельність)
+        return {
+          ...course,
+          modules: updatedModules,
+          completedModules: completedCount,
+        };
+      }),
     );
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header studentName={userProfile.name} />
+      <Header id={1} />
 
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-2 bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
-          <div>
-            <p className="font-bold">Студент: {userProfile.name}</p>
-            <p className="text-gray-600">Поточна група: {userProfile.group}</p>
-          </div>
-          <button
-            onClick={handleTransfer}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition-colors"
-          >
-            Перевести в Advanced
-          </button>
-        </div>
-
         <div className="flex flex-col md:flex-row gap-6 items-start">
-          <aside className="w-full md:w-1/3 flex flex-col gap-6">
+          <aside className="w-full flex flex-col gap-6">
             <CourseProgress
-              course={selectedCourse}
-              onCompleteLesson={() =>
-                selectedCourseId && handleCompleteLesson(selectedCourseId)
-              }
+              courseId={selectedCourseId}
+              onToggleModule={handleToggleModule}
             />
-
-            <FocusTimer />
           </aside>
 
           <Section title="Мої поточні курси">
@@ -106,11 +66,8 @@ function App() {
                 placeholder="Пошук курсів..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <p className="text-sm text-gray-500 mt-2">
-                Ви шукаєте: {searchQuery}
-              </p>
             </div>
 
             <div className="flex flex-wrap gap-4">
@@ -118,17 +75,12 @@ function App() {
                 <CourseCard
                   key={course.id}
                   {...course}
+                  totalModules={course.modules.length}
                   isSelected={selectedCourseId === course.id}
                   onSelect={() => setSelectedCourseId(course.id)}
                 />
               ))}
             </div>
-          </Section>
-
-          <Section title="Останні оцінки">
-            <p className="text-gray-500 italic">
-              Тут скоро будуть ваші оцінки за домашки...
-            </p>
           </Section>
         </div>
       </div>
