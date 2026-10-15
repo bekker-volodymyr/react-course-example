@@ -48,18 +48,15 @@ export default function CourseProgressContent({
 
   const handleToggleModule = async (module: Module) => {
     startTransition(async () => {
-      // 1. МИТТЄВО оновлюємо оптимістичний стейт (передаємо назву модуля)
       setOptimisticDetails(module.name);
 
       try {
-        // 2. Симулюємо запит на бекенд
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         if (Math.random() > 0.8) {
           throw new Error('Fake server error');
         }
 
-        // 3. Зберігаємо зміни у глобальний стейт App
         onToggleModule(courseId, module.name);
 
         const targetCourse = courseDetailsData.find((c) => c.id === details.id);

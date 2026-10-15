@@ -24,7 +24,7 @@ export function CourseProgress({
 }: CourseProgressProps) {
   const [coursePromise, setCoursePromise] =
     useState<Promise<CourseDetails> | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0); // Тригер для перезапиту
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let ignore = false;
@@ -34,7 +34,6 @@ export function CourseProgress({
       return;
     }
 
-    // Запускаємо запит за даними
     setCoursePromise(
       fetchCourseDetails(courseId).then((res) => {
         if (ignore) throw new Promise(() => {});

@@ -20,10 +20,8 @@ function App() {
   const handleToggleModule = (courseId: string, targetModuleName: string) => {
     setCourses((prevCourses) =>
       prevCourses.map((course) => {
-        // Якщо це не наш курс — повертаємо без змін
         if (course.id !== courseId) return course;
 
-        // 1. Оновлюємо статус модулів усередині курсу
         const updatedModules = course.modules.map((mod) => {
           if (mod.name === targetModuleName) {
             return { ...mod, isCompleted: !mod.isCompleted };
@@ -31,12 +29,10 @@ function App() {
           return mod;
         });
 
-        // 2. Перераховуємо кількість пройдених модулів
         const completedCount = updatedModules.filter(
           (mod) => mod.isCompleted,
         ).length;
 
-        // 3. Повертаємо новий об'єкт курсу зі збереженням незмінних полів (імутабельність)
         return {
           ...course,
           modules: updatedModules,
