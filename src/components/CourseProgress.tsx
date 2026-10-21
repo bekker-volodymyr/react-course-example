@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
-import { Suspense } from 'react';
-
+import { useEffect, useState, Suspense } from 'react';
 import { courseDetailsData, type CourseDetails } from '../data/courses';
 import CourseProgressContent from './CourseProgressContent';
 
@@ -24,8 +22,8 @@ export function CourseProgress({
 }: CourseProgressProps) {
   const [coursePromise, setCoursePromise] =
     useState<Promise<CourseDetails> | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
 
+  // Виконується ТІЛЬКИ коли користувач обирає інший курс.
   useEffect(() => {
     let ignore = false;
 
@@ -44,7 +42,7 @@ export function CourseProgress({
     return () => {
       ignore = true;
     };
-  }, [courseId, refreshKey]);
+  }, [courseId]);
 
   if (!courseId || !coursePromise) {
     return (
@@ -56,6 +54,7 @@ export function CourseProgress({
 
   return (
     <Suspense
+      // key гарантує, що при зміні курсу Suspense скине локальний стейт у CourseProgressContent
       key={courseId}
       fallback={
         <div className="bg-white p-6 mt-5 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-center items-center h-[300px]">
@@ -68,7 +67,6 @@ export function CourseProgress({
         courseId={courseId}
         coursePromise={coursePromise}
         onToggleModule={onToggleModule}
-        onTriggerRefetch={() => setRefreshKey((prev) => prev + 1)}
       />
     </Suspense>
   );

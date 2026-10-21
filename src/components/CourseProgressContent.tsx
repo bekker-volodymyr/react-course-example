@@ -1,29 +1,30 @@
-import { use, useTransition, useOptimistic } from 'react';
+import { use, useState, useTransition, useOptimistic } from 'react';
 import { ModuleCheckbox } from './ModuleCheckBox';
-import {
-  type CourseDetails,
-  type Module,
-  courseDetailsData,
-} from '../data/courses';
+import { type CourseDetails, type Module } from '../data/courses';
 
 interface CourseProgressContentProps {
   courseId: string;
   coursePromise: Promise<CourseDetails>;
   onToggleModule: (courseId: string, moduleName: string) => void;
-  onTriggerRefetch: () => void;
 }
 
 export default function CourseProgressContent({
   courseId,
   coursePromise,
   onToggleModule,
-  onTriggerRefetch,
 }: CourseProgressContentProps) {
-  const details = use(coursePromise);
+  // 1. Початковий рендер (чекає проміс, показує fallback у батька)
+  const initialDetails = use(coursePromise);
+
+  // 2. Локальний стейт. Ініціалізується один раз завдяки key={courseId} на Suspense.
+  const [localDetails, setLocalDetails] =
+    useState<CourseDetails>(initialDetails);
+
   const [isPending, startTransition] = useTransition();
 
+  // 3. Оптимістичний UI завжди базується на локальному стейті
   const [optimisticDetails, setOptimisticDetails] = useOptimistic(
-    details,
+    localDetails,
     (currentDetails, toggledModuleName: string) => {
       const updatedModules = currentDetails.modules.map((m) =>
         m.name === toggledModuleName
@@ -48,32 +49,34 @@ export default function CourseProgressContent({
 
   const handleToggleModule = async (module: Module) => {
     startTransition(async () => {
+      // Застосовуємо оптимістичний UI
       setOptimisticDetails(module.name);
 
       try {
+        // Запит на сервер (зміна статусу в БД)
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         if (Math.random() > 0.8) {
           throw new Error('Fake server error');
         }
 
+        // Синхронізація глобального стейту в App (якщо потрібно)
         onToggleModule(courseId, module.name);
 
-        const targetCourse = courseDetailsData.find((c) => c.id === details.id);
-        if (targetCourse) {
-          const targetMod = targetCourse.modules.find(
-            (m) => m.name === module.name,
-          );
-          if (targetMod) {
-            targetMod.isCompleted = !targetMod.isCompleted;
-            targetCourse.completedModules = targetCourse.modules.filter(
-              (m) => m.isCompleted,
-            ).length;
-          }
-        }
+        // УСПІХ: Оновлюємо локальний стейт без рефетчу
+        const updatedModules = localDetails.modules.map((m) =>
+          m.name === module.name ? { ...m, isCompleted: !m.isCompleted } : m,
+        );
 
-        onTriggerRefetch();
+        setLocalDetails({
+          ...localDetails,
+          modules: updatedModules,
+          completedModules: updatedModules.filter((m) => m.isCompleted).length,
+        });
       } catch (error) {
+        // У разі помилки ми просто не викликаємо setLocalDetails.
+        // Оскільки транзакція завершиться, useOptimistic автоматично
+        // відкотиться до незміненого localDetails.
         alert(
           `Не вдалося зберегти прогрес для "${module.name}". Спробуйте ще раз.`,
         );
