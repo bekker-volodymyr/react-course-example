@@ -23,7 +23,6 @@ export function CourseProgress({
   const [coursePromise, setCoursePromise] =
     useState<Promise<CourseDetails> | null>(null);
 
-  // Виконується ТІЛЬКИ коли користувач обирає інший курс.
   useEffect(() => {
     let ignore = false;
 
