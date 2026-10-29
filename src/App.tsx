@@ -6,6 +6,7 @@ import { CourseProgress } from './components/CourseProgress';
 import LoginForm from './components/LogInForm';
 
 import { type CourseDetails, courseDetailsData } from './data/courses';
+import ProfileEditForm from './components/ProfileEditForm';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -63,7 +64,7 @@ function App() {
       <Header id={1} />
 
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row gap-6 items-start">
+        <div className="grid grid-cols-[1fr_3fr] gap-6 items-start">
           <aside className="w-full flex flex-col gap-6">
             <CourseProgress
               courseId={selectedCourseId}
@@ -94,6 +95,10 @@ function App() {
               ))}
             </div>
           </Section>
+
+          <div className="col-span-2">
+            <ProfileEditForm />
+          </div>
         </div>
       </div>
     </div>
