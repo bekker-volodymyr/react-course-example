@@ -1,14 +1,11 @@
 import { useEffect, useState, Suspense } from 'react';
 import { courseDetailsData, type CourseDetails } from '../data/courses';
 import CourseProgressContent from './CourseProgressContent';
+import api from '@/lib/axios';
 
-const fetchCourseDetails = (id: string): Promise<CourseDetails> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const targetCourse = courseDetailsData.find((c) => c.id === id);
-      if (targetCourse) resolve(targetCourse);
-    }, 1500);
-  });
+const fetchCourseDetails = async (id: string): Promise<CourseDetails> => {
+  const response = await api.get<CourseDetails>(`/api/courses/${id}`);
+  return response.data;
 };
 
 interface CourseProgressProps {

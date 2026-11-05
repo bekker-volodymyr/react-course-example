@@ -1,6 +1,7 @@
 import { use, useState, useTransition, useOptimistic } from 'react';
 import { ModuleCheckbox } from './ModuleCheckBox';
 import { type CourseDetails, type Module } from '../data/courses';
+import api from '@/lib/axios';
 
 interface CourseProgressContentProps {
   courseId: string;
@@ -54,11 +55,9 @@ export default function CourseProgressContent({
 
       try {
         // Запит на сервер (зміна статусу в БД)
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        if (Math.random() > 0.8) {
-          throw new Error('Fake server error');
-        }
+        await api.patch(`/api/courses/${courseId}/toggle-module`, {
+          moduleName: module.name,
+        });
 
         // Синхронізація глобального стейту в App (якщо потрібно)
         onToggleModule(courseId, module.name);

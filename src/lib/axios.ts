@@ -4,23 +4,24 @@ const baseURL = 'http://localhost:3001';
 
 const api = axios.create({
   baseURL,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const accessToken = localStorage.getItem('accessToken');
+// api.interceptors.request.use(
+//   (config: InternalAxiosRequestConfig) => {
+//     const accessToken = localStorage.getItem('accessToken');
 
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
+//     if (accessToken) {
+//       config.headers.Authorization = `Bearer ${accessToken}`;
+//     }
 
-    return config;
-  },
-  (error: AxiosError) => Promise.reject(error),
-);
+//     return config;
+//   },
+//   (error: AxiosError) => Promise.reject(error),
+// );
 
 // Додаємо інтерфейс для власного поля _isRetry
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {

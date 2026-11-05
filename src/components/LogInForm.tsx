@@ -2,6 +2,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
+import api from '../lib/axios';
 
 const loginSchema = z.object({
   email: z.email('Невірний формат email').min(1, "Email обов'язковий"),
@@ -17,14 +18,28 @@ export default function LoginForm() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<ILoginForm>({
     resolver: zodResolver(loginSchema),
   });
 
   const onSubmit: SubmitHandler<ILoginForm> = async (data) => {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log('Відправлені дані:', data);
+    try {
+      const response = await api.post('/api/login', data);
+
+      // Більше не треба діставати токени з response.data і пхати в localStorage.
+      // Сервер вже поставив їх у браузер через заголовки Set-Cookie!
+      const { user } = response.data;
+
+      console.log('Успішний вхід. Користувач:', user);
+    } catch (error) {
+      console.error('Помилка логіну:', error);
+      setError('root', {
+        type: 'server',
+        message: 'Не вдалося увійти',
+      });
+    }
   };
 
   return (
@@ -59,10 +74,16 @@ export default function LoginForm() {
           {errors.password.message}
         </span>
       )}
+      {errors.root && (
+        <span className="text-red-500 text-sm font-semibold">
+          {errors.root.message}
+        </span>
+      )}
 
       <button
         type="submit"
-        className="font-bold text-base text-white bg-blue-950 rounded-sm px-3 py-1 transition-all hover:bg-blue-800"
+        disabled={isSubmitting}
+        className="font-bold flex gap-2 items-center text-base text-white bg-blue-950 rounded-sm px-3 py-1 transition-all hover:bg-blue-800 disabled:opacity-50"
       >
         {isSubmitting ? <Loader2 className="animate-spin" /> : 'Увійти'}
       </button>

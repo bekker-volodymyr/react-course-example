@@ -1,10 +1,16 @@
-const express = require('express');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
+import express from 'express';
+import cors from 'cors';
+import jwt from 'jsonwebtoken';
+import cookieParser from 'cookie-parser';
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', 
+  credentials: true 
+}));
+
 app.use(express.json());
+app.use(cookieParser());
 
 // Секретні ключі для підпису токенів (у реальному житті зберігаються в .env)
 const ACCESS_SECRET = 'secret-access-key';
@@ -12,32 +18,31 @@ const REFRESH_SECRET = 'secret-refresh-key';
 
 // 1. Логін (ігнорує email/пароль і просто видає токени)
 app.post('/api/login', (req, res) => {
-  // Access Token живе всього 15 секунд — ідеально для тестування рефрешу на уроці
   const accessToken = jwt.sign({ role: 'student' }, ACCESS_SECRET, { expiresIn: '15s' });
   const refreshToken = jwt.sign({ role: 'student' }, REFRESH_SECRET, { expiresIn: '1d' });
 
-  res.json({
-    accessToken,
-    refreshToken,
-    user: { name: 'Студент', email: req.body.email || 'student@diary.com' }
-  });
+  // Сервер сам ставить кукі (httpOnly захищає від крадіжки через JS)
+  res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: 15 * 1000 });
+  res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+
+  res.json({ user: { name: 'Студент', email: req.body.email || 'student@diary.com' } });
 });
 
 // 2. Оновлення токена (Refresh)
 app.post('/api/refresh', (req, res) => {
-  const { refreshToken } = req.body;
+  // Тепер читаємо рефреш не з body, а з кук
+  const refreshToken = req.cookies.refreshToken;
   
-  if (!refreshToken) {
-    return res.status(401).json({ message: 'Refresh token відсутній' });
-  }
+  if (!refreshToken) return res.status(401).json({ message: 'Refresh token відсутній' });
 
-  // Перевіряємо валідність Refresh токена
   jwt.verify(refreshToken, REFRESH_SECRET, (err) => {
     if (err) return res.status(403).json({ message: 'Refresh token недійсний' });
     
-    // Якщо все ок, видаємо новий короткостроковий Access Token
     const newAccessToken = jwt.sign({ role: 'student' }, ACCESS_SECRET, { expiresIn: '15s' });
-    res.json({ accessToken: newAccessToken });
+    
+    // Оновлюємо куку з Access токеном
+    res.cookie('accessToken', newAccessToken, { httpOnly: true, maxAge: 15 * 1000 });
+    res.json({ message: 'Токен оновлено' });
   });
 });
 
@@ -133,6 +138,66 @@ app.get('/api/courses', (req, res) => {
 
     // Дані для електронного щоденника
     res.json(courseDetailsData);
+  });
+});
+
+// 4. Захищений ендпоінт: Деталі конкретного курсу за ID
+app.get('/api/courses/:id', (req, res) => {
+  // Читаємо токен з кук (якщо фронтенд налаштований на withCredentials: true)
+  const token = req.cookies.accessToken; 
+  
+  if (!token) {
+    return res.status(401).json({ message: 'Немає доступу (відсутній токен)' });
+  }
+
+  jwt.verify(token, ACCESS_SECRET, (err) => {
+    if (err) {
+      return res.status(401).json({ message: 'Токен прострочений (Token Expired)' });
+    }
+
+    const courseId = req.params.id;
+    const targetCourse = courseDetailsData.find((c) => c.id === courseId);
+
+    if (!targetCourse) {
+      return res.status(404).json({ message: 'Курс не знайдено' });
+    }
+
+    res.json(targetCourse);
+  });
+});
+
+// 5. Захищений ендпоінт: Зміна статусу модуля (виконано/не виконано)
+app.patch('/api/courses/:id/toggle-module', (req, res) => {
+  const token = req.cookies.accessToken;
+  
+  if (!token) {
+    return res.status(401).json({ message: 'Немає доступу (відсутній токен)' });
+  }
+
+  jwt.verify(token, ACCESS_SECRET, (err) => {
+    if (err) {
+      return res.status(401).json({ message: 'Токен прострочений' });
+    }
+
+    const courseId = req.params.id;
+    const { moduleName } = req.body;
+
+    const targetCourse = courseDetailsData.find((c) => c.id === courseId);
+    if (!targetCourse) {
+      return res.status(404).json({ message: 'Курс не знайдено' });
+    }
+
+    const targetModule = targetCourse.modules.find((m) => m.name === moduleName);
+    if (!targetModule) {
+      return res.status(404).json({ message: 'Модуль не знайдено' });
+    }
+
+    // Інвертуємо статус
+    targetModule.isCompleted = !targetModule.isCompleted;
+    // Перераховуємо кількість завершених модулів
+    targetCourse.completedModules = targetCourse.modules.filter((m) => m.isCompleted).length;
+
+    res.json({ message: 'Статус збережено', course: targetCourse });
   });
 });
 
