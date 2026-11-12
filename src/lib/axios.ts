@@ -10,66 +10,19 @@ const api = axios.create({
   },
 });
 
-// api.interceptors.request.use(
-//   (config: InternalAxiosRequestConfig) => {
-//     const accessToken = localStorage.getItem('accessToken');
-
-//     if (accessToken) {
-//       config.headers.Authorization = `Bearer ${accessToken}`;
-//     }
-
-//     return config;
-//   },
-//   (error: AxiosError) => Promise.reject(error),
-// );
-
-// Додаємо інтерфейс для власного поля _isRetry
-interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
-  _isRetry?: boolean;
-}
-
 api.interceptors.response.use(
-  (response) => response,
-  async (error: AxiosError) => {
-    // Приводимо config до нашого кастомного інтерфейсу
-    const originalRequest = error.config as CustomAxiosRequestConfig;
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    const originalRequest = error.config;
 
-    if (
-      error.response?.status === 401 &&
-      originalRequest &&
-      !originalRequest._isRetry
-    ) {
-      originalRequest._isRetry = true;
-
+    if (error.response?.status === 401) {
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
-
-        if (!refreshToken) {
-          throw new Error('Refresh token відсутній');
-        }
-
-        // Типізуємо відповідь від сервера рефрешу
-        const response = await axios.post<{ accessToken: string }>(
-          `${baseURL}/api/refresh`,
-          { refreshToken },
-        );
-
-        const newAccessToken = response.data.accessToken;
-        localStorage.setItem('accessToken', newAccessToken);
-
-        // TypeScript тепер знає, що headers існують
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        }
-
+        await axios.post(`${baseURL}/api/refresh`);
         return api(originalRequest);
       } catch (refreshError) {
-        console.error('Сесія закінчилась. Потрібно залогінитись наново.');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-
-        // window.location.href = '/login';
-
+        console.error(refreshError);
         return Promise.reject(refreshError);
       }
     }

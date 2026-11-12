@@ -1,104 +1,90 @@
-import { use, useState, useTransition, useOptimistic } from 'react';
+import {
+  useSuspenseQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { ModuleCheckbox } from './ModuleCheckBox';
 import { type CourseDetails, type Module } from '../data/courses';
-import api from '@/lib/axios';
+import api from '../lib/axios';
 
 interface CourseProgressContentProps {
   courseId: string;
-  coursePromise: Promise<CourseDetails>;
-  onToggleModule: (courseId: string, moduleName: string) => void;
 }
+
+const fetchCourseDetails = async (id: string): Promise<CourseDetails> => {
+  const response = await api.get<CourseDetails>(`/api/courses/${id}`);
+  return response.data;
+};
 
 export default function CourseProgressContent({
   courseId,
-  coursePromise,
-  onToggleModule,
 }: CourseProgressContentProps) {
-  // 1. Початковий рендер (чекає проміс, показує fallback у батька)
-  const initialDetails = use(coursePromise);
+  const queryClient = useQueryClient();
 
-  // 2. Локальний стейт. Ініціалізується один раз завдяки key={courseId} на Suspense.
-  const [localDetails, setLocalDetails] =
-    useState<CourseDetails>(initialDetails);
+  const { data: courseDetails } = useSuspenseQuery({
+    queryKey: ['course', courseId],
+    queryFn: () => fetchCourseDetails(courseId),
+  });
 
-  const [isPending, startTransition] = useTransition();
-
-  // 3. Оптимістичний UI завжди базується на локальному стейті
-  const [optimisticDetails, setOptimisticDetails] = useOptimistic(
-    localDetails,
-    (currentDetails, toggledModuleName: string) => {
-      const updatedModules = currentDetails.modules.map((m) =>
-        m.name === toggledModuleName
-          ? { ...m, isCompleted: !m.isCompleted }
-          : m,
-      );
-
-      const completedCount = updatedModules.filter((m) => m.isCompleted).length;
-
-      return {
-        ...currentDetails,
-        modules: updatedModules,
-        completedModules: completedCount,
-      };
+  const toggleModuleMutation = useMutation({
+    mutationFn: async (moduleName: string) => {
+      await api.patch(`/api/courses/${courseId}/toggle-module`, { moduleName });
     },
-  );
+    onMutate: async (moduleName) => {
+      await queryClient.cancelQueries({ queryKey: ['course', courseId] });
+      const previousDetails = queryClient.getQueryData<CourseDetails>([
+        'course',
+        courseId,
+      ]);
+
+      queryClient.setQueryData<CourseDetails>(['course', courseId], (old) => {
+        if (!old) return old;
+
+        const updatedModules = old.modules.map((m) =>
+          m.name === moduleName ? { ...m, isCompleted: !m.isCompleted } : m,
+        );
+        const completedCount = updatedModules.filter(
+          (m) => m.isCompleted,
+        ).length;
+
+        return {
+          ...old,
+          modules: updatedModules,
+          completedModules: completedCount,
+        };
+      });
+
+      return { previousDetails };
+    },
+    onError: (error, moduleName, context) => {
+      if (context?.previousDetails) {
+        queryClient.setQueryData(['course', courseId], context.previousDetails);
+      }
+      alert(
+        `Не вдалося зберегти прогрес для "${moduleName}". Спробуйте ще раз.`,
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['course', courseId] });
+    },
+  });
 
   const progressPercentage = Math.round(
-    (optimisticDetails.completedModules / optimisticDetails.modules.length) *
-      100,
+    (courseDetails.completedModules / courseDetails.modules.length) * 100,
   );
-
-  const handleToggleModule = async (module: Module) => {
-    startTransition(async () => {
-      // Застосовуємо оптимістичний UI
-      setOptimisticDetails(module.name);
-
-      try {
-        // Запит на сервер (зміна статусу в БД)
-        await api.patch(`/api/courses/${courseId}/toggle-module`, {
-          moduleName: module.name,
-        });
-
-        // Синхронізація глобального стейту в App (якщо потрібно)
-        onToggleModule(courseId, module.name);
-
-        // УСПІХ: Оновлюємо локальний стейт без рефетчу
-        const updatedModules = localDetails.modules.map((m) =>
-          m.name === module.name ? { ...m, isCompleted: !m.isCompleted } : m,
-        );
-
-        setLocalDetails({
-          ...localDetails,
-          modules: updatedModules,
-          completedModules: updatedModules.filter((m) => m.isCompleted).length,
-        });
-      } catch (error) {
-        // У разі помилки ми просто не викликаємо setLocalDetails.
-        // Оскільки транзакція завершиться, useOptimistic автоматично
-        // відкотиться до незміненого localDetails.
-        alert(
-          `Не вдалося зберегти прогрес для "${module.name}". Спробуйте ще раз.`,
-        );
-      }
-    });
-  };
 
   return (
     <div className="bg-white p-6 mt-5 rounded-xl shadow-sm border border-gray-200">
       <h3
         className="font-bold text-lg text-gray-800 mb-4 truncate"
-        title={optimisticDetails.title}
+        title={courseDetails.title}
       >
-        📈 {optimisticDetails.title}
+        📈 {courseDetails.title}
       </h3>
-
       <p className="text-sm text-gray-500 mb-1">
-        Викладач: {optimisticDetails.teacher}
+        Викладач: {courseDetails.teacher}
       </p>
-
-      <p className="text-xs text-gray-500 mb-2">
-        {optimisticDetails.description}
-      </p>
+      <p className="text-xs text-gray-500 mb-2">{courseDetails.description}</p>
 
       <div className="space-y-4 mb-6">
         <div>
@@ -107,40 +93,44 @@ export default function CourseProgressContent({
               Пройдено матеріалів:
             </span>
             <span className="font-bold text-blue-600">
-              {optimisticDetails.completedModules} /{' '}
-              {optimisticDetails.modules.length}
+              {courseDetails.completedModules} / {courseDetails.modules.length}
             </span>
           </div>
-
           <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
             <div
               className="bg-blue-600 h-2.5 rounded-full transition-all duration-500 ease-out"
-              style={{
-                width: `${progressPercentage}%`,
-              }}
+              style={{ width: `${progressPercentage}%` }}
             ></div>
           </div>
         </div>
 
         <div className="space-y-2">
-          {optimisticDetails.modules.map((m, index) => (
-            <div
-              key={m.name}
-              className="flex justify-between items-center bg-gray-50 p-2 rounded"
-            >
-              <div>
-                <span className="text-sm text-gray-500 font-mono mr-1">
-                  {index + 1}.
-                </span>
-                <span className="text-sm text-gray-700">{m.name}</span>
+          {courseDetails.modules.map((m, index) => {
+            const isThisModulePending =
+              toggleModuleMutation.isPending &&
+              toggleModuleMutation.variables === m.name;
+
+            return (
+              <div
+                key={m.name}
+                className="flex justify-between items-center bg-gray-50 p-2 rounded"
+              >
+                <div>
+                  <span className="text-sm text-gray-500 font-mono mr-1">
+                    {index + 1}.
+                  </span>
+                  <span className="text-sm text-gray-700">{m.name}</span>
+                </div>
+                <ModuleCheckbox
+                  module={m}
+                  isPending={isThisModulePending}
+                  onToggleComplete={(module: Module) =>
+                    toggleModuleMutation.mutate(module.name)
+                  }
+                />
               </div>
-              <ModuleCheckbox
-                module={m}
-                isPending={isPending}
-                onToggleComplete={handleToggleModule}
-              />
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
