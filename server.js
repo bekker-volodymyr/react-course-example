@@ -2,6 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
+import fs from 'fs/promises';
+import path from 'path';
+
+const readCoursesFromFile = async () => {
+  const filePath = path.join(process.cwd(), 'courses.json');
+  const rawData = await fs.readFile(filePath, 'utf-8');
+  return JSON.parse(rawData);
+};
 
 const app = express();
 app.use(
@@ -19,16 +27,20 @@ const REFRESH_SECRET = 'secret-refresh-key';
 
 app.post('/api/login', (req, res) => {
   const accessToken = jwt.sign({ role: 'student' }, ACCESS_SECRET, {
-    expiresIn: '1h',
+    expiresIn: '1h', // 1 година
   });
   const refreshToken = jwt.sign({ role: 'student' }, REFRESH_SECRET, {
-    expiresIn: '1d',
+    expiresIn: '7d', // 7 днів
   });
 
-  res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: 60 * 1000 });
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    maxAge: 60 * 60 * 1000, // 1 година в мілісекундах (3 600 000)
+  });
+
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 днів в мілісекундах
   });
 
   res.json({
@@ -47,14 +59,30 @@ app.post('/api/refresh', (req, res) => {
       return res.status(403).json({ message: 'Refresh token недійсний' });
 
     const newAccessToken = jwt.sign({ role: 'student' }, ACCESS_SECRET, {
-      expiresIn: '15s',
+      expiresIn: '1h',
     });
 
     res.cookie('accessToken', newAccessToken, {
       httpOnly: true,
-      maxAge: 15 * 1000,
+      maxAge: 60 * 60 * 1000,
     });
     res.json({ message: 'Токен оновлено' });
+  });
+});
+
+app.get('/api/me', (req, res) => {
+  const token = req.cookies.accessToken;
+
+  if (!token) {
+    return res.status(401).json({ message: 'Немає доступу' });
+  }
+
+  jwt.verify(token, ACCESS_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: 'Токен прострочений' });
+    }
+
+    res.json({ role: decoded.role });
   });
 });
 
@@ -135,6 +163,27 @@ const courseDetailsData = [
     completedModules: 3,
   },
 ];
+
+app.get('/api/courses/search', async (req, res) => {
+  try {
+    const query = (req.query.q || '').toString().trim().toLowerCase();
+    const courses = await readCoursesFromFile();
+
+    // Якщо рядок пошуку порожній — повертаємо порожній масив (або всі курси, якщо прибрати цю умову)
+    if (!query) {
+      return res.json([]);
+    }
+
+    const results = courses
+      .filter((course) => course.title.toLowerCase().includes(query))
+      .map(({ id, title }) => ({ id, title })); // Повертаємо тільки id та title
+
+    res.json(results);
+  } catch (error) {
+    console.error('Помилка читання файлу курсів:', error);
+    res.status(500).json({ message: 'Не вдалося виконати пошук' });
+  }
+});
 
 app.get('/api/courses', (req, res) => {
   res.json(courseDetailsData);

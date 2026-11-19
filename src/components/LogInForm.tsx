@@ -1,4 +1,6 @@
 import { useForm, type SubmitHandler } from 'react-hook-form';
+import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
@@ -15,6 +17,9 @@ const loginSchema = z.object({
 type ILoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
@@ -28,11 +33,11 @@ export default function LoginForm() {
     try {
       const response = await api.post('/api/login', data);
 
-      // Більше не треба діставати токени з response.data і пхати в localStorage.
-      // Сервер вже поставив їх у браузер через заголовки Set-Cookie!
       const { user } = response.data;
 
       console.log('Успішний вхід. Користувач:', user);
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      navigate('/dashboard', { replace: true });
     } catch (error) {
       console.error('Помилка логіну:', error);
       setError('root', {

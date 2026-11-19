@@ -1,0 +1,745 @@
+[
+  {
+    "id": "c1",
+    "title": "Основи HTML та CSS",
+    "description": "Фундаментальний курс з верстки веб-сторінок. Вивчіть семантичний HTML та сучасний CSS (Flexbox, Grid) для створення стильних та адаптивних сайтів.",
+    "teacher": "Олексій Іванов",
+    "modules": [
+      {
+        "id": "c1-m1",
+        "name": "Вступ до веб-технологій",
+        "isCompleted": true
+      },
+      {
+        "id": "c1-m2",
+        "name": "Семантична розмітка HTML5",
+        "isCompleted": true
+      },
+      {
+        "id": "c1-m3",
+        "name": "Основи стилізації та селектори",
+        "isCompleted": true
+      },
+      {
+        "id": "c1-m4",
+        "name": "Системи розкладки: Flexbox та Grid",
+        "isCompleted": true
+      },
+      {
+        "id": "c1-m5",
+        "name": "Адаптивний та мобільний дизайн",
+        "isCompleted": true
+      }
+    ],
+    "completedModules": 5
+  },
+  {
+    "id": "c2",
+    "title": "JavaScript Advanced",
+    "description": "Поглиблене вивчення JavaScript. Розбираємо під капотом замикання, прототипи, event loop та асинхронне програмування (Promises, async/await).",
+    "teacher": "Марія Коваленко",
+    "modules": [
+      {
+        "id": "c2-m1",
+        "name": "Просунута робота з функціями та замикання",
+        "isCompleted": true
+      },
+      {
+        "id": "c2-m2",
+        "name": "Об'єктно-орієнтований JS та прототипи",
+        "isCompleted": true
+      },
+      {
+        "id": "c2-m3",
+        "name": "Асинхронність та Event Loop",
+        "isCompleted": true
+      },
+      {
+        "id": "c2-m4",
+        "name": "Робота з мережею (Fetch API)",
+        "isCompleted": true
+      },
+      {
+        "id": "c2-m5",
+        "name": "Маніпуляції з DOM-деревом",
+        "isCompleted": true
+      }
+    ],
+    "completedModules": 5
+  },
+  {
+    "id": "c3",
+    "title": "React Frontend",
+    "description": "Сучасна розробка інтерактивних інтерфейсів. Компонентний підхід, глибоке розуміння хуків, управління станом та маршрутизація.",
+    "teacher": "Володимир Юркевич",
+    "modules": [
+      {
+        "id": "c3-m1",
+        "name": "Вступ до JSX та Компонентів",
+        "isCompleted": true
+      },
+      {
+        "id": "c3-m2",
+        "name": "Локальний стан та Пропси",
+        "isCompleted": true
+      },
+      {
+        "id": "c3-m3",
+        "name": "Побічні ефекти (useEffect)",
+        "isCompleted": false
+      },
+      {
+        "id": "c3-m4",
+        "name": "Робота з формами та валідація",
+        "isCompleted": false
+      },
+      {
+        "id": "c3-m5",
+        "name": "Маршрутизація з React Router",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 2
+  },
+  {
+    "id": "c4",
+    "title": "Програмування на C++",
+    "description": "Комплексний курс з C++. Від базових конструкцій до ручного керування пам'яттю, вказівників, шаблонів (templates) та роботи з контейнерами STL.",
+    "teacher": "Володимир Юркевич",
+    "modules": [
+      {
+        "id": "c4-m1",
+        "name": "Базовий синтаксис та типи даних",
+        "isCompleted": false
+      },
+      {
+        "id": "c4-m2",
+        "name": "Вказівники та динамічна пам'ять",
+        "isCompleted": false
+      },
+      {
+        "id": "c4-m3",
+        "name": "Об'єктно-орієнтоване програмування",
+        "isCompleted": false
+      },
+      {
+        "id": "c4-m4",
+        "name": "Шаблони класів та функцій",
+        "isCompleted": false
+      },
+      {
+        "id": "c4-m5",
+        "name": "Алгоритми та структури даних STL",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 0
+  },
+  {
+    "id": "c5",
+    "title": "Fullstack на Next.js",
+    "description": "Створення повноцінних веб-додатків. Використання Next.js (App Router), серверних компонентів, інтеграція з базою даних та деплой.",
+    "teacher": "Максим Бондаренко",
+    "modules": [
+      {
+        "id": "c5-m1",
+        "name": "Архітектура Next.js (App Router)",
+        "isCompleted": true
+      },
+      {
+        "id": "c5-m2",
+        "name": "Серверні vs Клієнтські компоненти",
+        "isCompleted": true
+      },
+      {
+        "id": "c5-m3",
+        "name": "Інтеграція з базою даних (Prisma)",
+        "isCompleted": true
+      },
+      {
+        "id": "c5-m4",
+        "name": "Аутентифікація користувачів",
+        "isCompleted": false
+      },
+      {
+        "id": "c5-m5",
+        "name": "Деплой та оптимізація продуктивності",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 3
+  },
+  {
+    "id": "c6",
+    "title": "TypeScript для професіоналів",
+    "description": "Сувора типізація у сучасній веб-розробці. Інтерфейси, дженеріки, утилітарні типи та безпечна інтеграція з React і Node.js.",
+    "teacher": "Марія Коваленко",
+    "modules": [
+      {
+        "id": "c6-m1",
+        "name": "Базові типи, Union та Intersection",
+        "isCompleted": true
+      },
+      {
+        "id": "c6-m2",
+        "name": "Інтерфейси та Type Aliases",
+        "isCompleted": true
+      },
+      {
+        "id": "c6-m3",
+        "name": "Generics (Узагальнені типи)",
+        "isCompleted": true
+      },
+      {
+        "id": "c6-m4",
+        "name": "Type Guards та звуження типів",
+        "isCompleted": false
+      },
+      {
+        "id": "c6-m5",
+        "name": "Вбудовані Utility Types (Pick, Omit, Partial)",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 3
+  },
+  {
+    "id": "c7",
+    "title": "Node.js та Express Backend",
+    "description": "Розробка серверної частини додатків на JavaScript. Створення REST API, робота з middleware, JWT-авторизацією та файловою системою.",
+    "teacher": "Дмитро Савченко",
+    "modules": [
+      {
+        "id": "c7-m1",
+        "name": "Архітектура Node.js та модульна система",
+        "isCompleted": true
+      },
+      {
+        "id": "c7-m2",
+        "name": "Маршрутизація та Middleware в Express",
+        "isCompleted": true
+      },
+      {
+        "id": "c7-m3",
+        "name": "Валідація запитів та обробка помилок",
+        "isCompleted": true
+      },
+      {
+        "id": "c7-m4",
+        "name": "Аутентифікація через JWT та Cookies",
+        "isCompleted": true
+      },
+      {
+        "id": "c7-m5",
+        "name": "Завантаження файлів та безпека API",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 4
+  },
+  {
+    "id": "c8",
+    "title": "Python з нуля до веб-розробки",
+    "description": "Практичний курс з Python. Синтаксис, структури даних, ООП, робота з API та створення швидких бекендів на FastAPI.",
+    "teacher": "Олена Мельник",
+    "modules": [
+      {
+        "id": "c8-m1",
+        "name": "Змінні, цикли та базові структури даних",
+        "isCompleted": true
+      },
+      {
+        "id": "c8-m2",
+        "name": "Функції, декоратори та генератори",
+        "isCompleted": true
+      },
+      {
+        "id": "c8-m3",
+        "name": "Класи та принципи ООП у Python",
+        "isCompleted": false
+      },
+      {
+        "id": "c8-m4",
+        "name": "Асинхронний Python (asyncio)",
+        "isCompleted": false
+      },
+      {
+        "id": "c8-m5",
+        "name": "Створення REST API на FastAPI",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 2
+  },
+  {
+    "id": "c9",
+    "title": "Бази даних та SQL (PostgreSQL)",
+    "description": "Проєктування реляційних баз даних. Написання складних запитів, індекси, транзакції, нормалізація та оптимізація швидкодії.",
+    "teacher": "Ігор Кравчук",
+    "modules": [
+      {
+        "id": "c9-m1",
+        "name": "Проєктування таблиць та зв'язків",
+        "isCompleted": true
+      },
+      {
+        "id": "c9-m2",
+        "name": "CRUD-операції та фільтрація даних",
+        "isCompleted": true
+      },
+      {
+        "id": "c9-m3",
+        "name": "Об'єднання таблиць (JOIN) та агрегація",
+        "isCompleted": true
+      },
+      {
+        "id": "c9-m4",
+        "name": "Індекси та аналіз планів запитів (EXPLAIN)",
+        "isCompleted": false
+      },
+      {
+        "id": "c9-m5",
+        "name": "Транзакції та рівні ізоляції ACID",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 3
+  },
+  {
+    "id": "c10",
+    "title": "Git та командна розробка на GitHub",
+    "description": "Повний контроль версій проєкту. Гілкування, вирішення конфліктів, Pull Requests, Code Review та основи CI/CD.",
+    "teacher": "Олексій Іванов",
+    "modules": [
+      {
+        "id": "c10-m1",
+        "name": "Ініціалізація репозиторію та базові коміти",
+        "isCompleted": true
+      },
+      {
+        "id": "c10-m2",
+        "name": "Робота з гілками (Branching & Merging)",
+        "isCompleted": true
+      },
+      {
+        "id": "c10-m3",
+        "name": "Rebase, Cherry-pick та відкат змін",
+        "isCompleted": true
+      },
+      {
+        "id": "c10-m4",
+        "name": "Вирішення конфліктів злиття",
+        "isCompleted": true
+      },
+      {
+        "id": "c10-m5",
+        "name": "GitHub Flow, Pull Requests та GitHub Actions",
+        "isCompleted": true
+      }
+    ],
+    "completedModules": 5
+  },
+  {
+    "id": "c11",
+    "title": "Алгоритми та структури даних",
+    "description": "Підготовка до технічних співбесід та оптимізація коду. Оцінка складності Big O, дерева, графи, хеш-таблиці та динамічне програмування.",
+    "teacher": "Володимир Юркевич",
+    "modules": [
+      {
+        "id": "c11-m1",
+        "name": "Асимптотична складність (Big O Notation)",
+        "isCompleted": true
+      },
+      {
+        "id": "c11-m2",
+        "name": "Масиви, зв'язні списки, стеки та черги",
+        "isCompleted": false
+      },
+      {
+        "id": "c11-m3",
+        "name": "Хеш-таблиці та алгоритми сортування",
+        "isCompleted": false
+      },
+      {
+        "id": "c11-m4",
+        "name": "Бінарні дерева пошуку та обхід графів",
+        "isCompleted": false
+      },
+      {
+        "id": "c11-m5",
+        "name": "Рекурсія та динамічне програмування",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 1
+  },
+  {
+    "id": "c12",
+    "title": "Docker та контейнеризація додатків",
+    "description": "Упаковка та запуск додатків у ізольованих середовищах. Створення оптимальних Dockerfile, мережі, томи та оркестрація через Docker Compose.",
+    "teacher": "Дмитро Савченко",
+    "modules": [
+      {
+        "id": "c12-m1",
+        "name": "Архітектура Docker: образи та контейнери",
+        "isCompleted": true
+      },
+      {
+        "id": "c12-m2",
+        "name": "Написання ефективних Dockerfile (Multi-stage)",
+        "isCompleted": true
+      },
+      {
+        "id": "c12-m3",
+        "name": "Збереження даних: Volumes та Bind Mounts",
+        "isCompleted": false
+      },
+      {
+        "id": "c12-m4",
+        "name": "Мережева взаємодія контейнерів",
+        "isCompleted": false
+      },
+      {
+        "id": "c12-m5",
+        "name": "Багатоконтейнерні додатки з Docker Compose",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 2
+  },
+  {
+    "id": "c13",
+    "title": "Tailwind CSS та сучасний UI-дизайн",
+    "description": "Швидка та масштабована стилізація веб-інтерфейсів. Утилітарний підхід, кастомізація тем, темний режим та побудова дизайн-систем.",
+    "teacher": "Анна Лисенко",
+    "modules": [
+      {
+        "id": "c13-m1",
+        "name": "Філософія Utility-First та налаштування",
+        "isCompleted": true
+      },
+      {
+        "id": "c13-m2",
+        "name": "Адаптивні брейкпоінти та стани (hover, focus)",
+        "isCompleted": true
+      },
+      {
+        "id": "c13-m3",
+        "name": "Анімації, переходи та трансформації",
+        "isCompleted": true
+      },
+      {
+        "id": "c13-m4",
+        "name": "Реалізація Dark Mode та кастомних токенів",
+        "isCompleted": true
+      },
+      {
+        "id": "c13-m5",
+        "name": "Інтеграція з компонентами React",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 4
+  },
+  {
+    "id": "c14",
+    "title": "Тестування Frontend-додатків",
+    "description": "Забезпечення стабільності коду. Написання юніт-тестів на Vitest, тестування компонентів у React Testing Library та E2E-тести на Playwright.",
+    "teacher": "Марія Коваленко",
+    "modules": [
+      {
+        "id": "c14-m1",
+        "name": "Піраміда тестування та основи Vitest",
+        "isCompleted": false
+      },
+      {
+        "id": "c14-m2",
+        "name": "Мокінг функцій та мережевих запитів (MSW)",
+        "isCompleted": false
+      },
+      {
+        "id": "c14-m3",
+        "name": "Тестування React-компонентів (Testing Library)",
+        "isCompleted": false
+      },
+      {
+        "id": "c14-m4",
+        "name": "Наскрізне E2E-тестування з Playwright",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 0
+  },
+  {
+    "id": "c15",
+    "title": "Розробка на C# та .NET",
+    "description": "Об'єктно-орієнтована розробка на платформі .NET. Синтаксис C#, LINQ, асинхронність та створення веб-сервісів на ASP.NET Core.",
+    "teacher": "Тарас Шевчук",
+    "modules": [
+      {
+        "id": "c15-m1",
+        "name": "Основи C# та система типів .NET",
+        "isCompleted": true
+      },
+      {
+        "id": "c15-m2",
+        "name": "Класи, інтерфейси та поліморфізм",
+        "isCompleted": true
+      },
+      {
+        "id": "c15-m3",
+        "name": "Колекції та запити LINQ",
+        "isCompleted": false
+      },
+      {
+        "id": "c15-m4",
+        "name": "Асинхронне програмування (async/await, Task)",
+        "isCompleted": false
+      },
+      {
+        "id": "c15-m5",
+        "name": "Створення Web API на ASP.NET Core",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 2
+  },
+  {
+    "id": "c16",
+    "title": "Мобільна розробка на React Native",
+    "description": "Створення кросплатформних додатків для iOS та Android на базі React та Expo. Навігація, нативні API пристрою та публікація в маркети.",
+    "teacher": "Максим Бондаренко",
+    "modules": [
+      {
+        "id": "c16-m1",
+        "name": "Налаштування середовища та Expo",
+        "isCompleted": true
+      },
+      {
+        "id": "c16-m2",
+        "name": "Базові компоненти та стилізація у мобайлі",
+        "isCompleted": false
+      },
+      {
+        "id": "c16-m3",
+        "name": "Навігація між екранами (Expo Router)",
+        "isCompleted": false
+      },
+      {
+        "id": "c16-m4",
+        "name": "Робота з камерою, геолокацією та пам'яттю",
+        "isCompleted": false
+      },
+      {
+        "id": "c16-m5",
+        "name": "Збірка та підготовка до публікації (EAS)",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 1
+  },
+  {
+    "id": "c17",
+    "title": "Java Core та Spring Boot",
+    "description": "Корпоративна розробка бекенду на Java. Глибоке розуміння JVM, колекцій, Spring IoC/DI, Spring Data JPA та захист через Spring Security.",
+    "teacher": "Ігор Кравчук",
+    "modules": [
+      {
+        "id": "c17-m1",
+        "name": "Синтаксис Java та принципи ООП",
+        "isCompleted": true
+      },
+      {
+        "id": "c17-m2",
+        "name": "Collections Framework та Stream API",
+        "isCompleted": true
+      },
+      {
+        "id": "c17-m3",
+        "name": "Основи Spring Boot та Dependency Injection",
+        "isCompleted": true
+      },
+      {
+        "id": "c17-m4",
+        "name": "Робота з БД через Spring Data JPA",
+        "isCompleted": false
+      },
+      {
+        "id": "c17-m5",
+        "name": "Авторизація у Spring Security",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 3
+  },
+  {
+    "id": "c18",
+    "title": "Архітектура та патерни проєктування",
+    "description": "Як писати чистий, гнучкий та підтримуваний код. Принципи SOLID, класичні патерни GoF, Clean Architecture та рефакторинг легасі.",
+    "teacher": "Володимир Юркевич",
+    "modules": [
+      {
+        "id": "c18-m1",
+        "name": "Принципи SOLID, DRY, KISS та YAGNI",
+        "isCompleted": true
+      },
+      {
+        "id": "c18-m2",
+        "name": "Породжувальні патерни (Factory, Singleton, Builder)",
+        "isCompleted": false
+      },
+      {
+        "id": "c18-m3",
+        "name": "Структурні патерни (Adapter, Decorator, Proxy)",
+        "isCompleted": false
+      },
+      {
+        "id": "c18-m4",
+        "name": "Поведінкові патерни (Observer, Strategy, Command)",
+        "isCompleted": false
+      },
+      {
+        "id": "c18-m5",
+        "name": "Шарувата та гексагональна архітектура",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 1
+  },
+  {
+    "id": "c19",
+    "title": "Linux та основи мережевих технологій",
+    "description": "Необхідний мінімум для кожного розробника. Робота в терміналі Bash, права доступу, процеси, HTTP/HTTPS, DNS та налаштування Nginx.",
+    "teacher": "Дмитро Савченко",
+    "modules": [
+      {
+        "id": "c19-m1",
+        "name": "Файлова система Linux та базові команди CLI",
+        "isCompleted": true
+      },
+      {
+        "id": "c19-m2",
+        "name": "Права доступу, користувачі та процеси",
+        "isCompleted": true
+      },
+      {
+        "id": "c19-m3",
+        "name": "Написання Bash-скриптів для автоматизації",
+        "isCompleted": false
+      },
+      {
+        "id": "c19-m4",
+        "name": "Модель OSI, TCP/IP, DNS та протокол HTTP/2",
+        "isCompleted": false
+      },
+      {
+        "id": "c19-m5",
+        "name": "Налаштування Nginx як Reverse Proxy",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 2
+  },
+  {
+    "id": "c20",
+    "title": "Веб-безпека та захист додатків (OWASP)",
+    "description": "Захист сучасних веб-додатків від вразливостей. Розбір атак XSS, CSRF, SQL-ін'єкцій, безпечне зберігання паролів та налаштування CORS/CSP.",
+    "teacher": "Тарас Шевчук",
+    "modules": [
+      {
+        "id": "c20-m1",
+        "name": "Огляд OWASP Top 10 вразливостей",
+        "isCompleted": true
+      },
+      {
+        "id": "c20-m2",
+        "name": "Захист від XSS та Content Security Policy (CSP)",
+        "isCompleted": false
+      },
+      {
+        "id": "c20-m3",
+        "name": "CSRF-атаки та безпека Cookies (SameSite, HttpOnly)",
+        "isCompleted": false
+      },
+      {
+        "id": "c20-m4",
+        "name": "Захист від ін'єкцій та хешування паролів (bcrypt)",
+        "isCompleted": false
+      },
+      {
+        "id": "c20-m5",
+        "name": "Безпека API, Rate Limiting та аудит залежностей",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 1
+  },
+  {
+    "id": "c21",
+    "title": "Управління станом у React (TanStack Query & Zustand)",
+    "description": "Сучасний підхід до серверного та клієнтського стану. Кешування запитів, оптимістичні оновлення, пагінація та легковагові стори.",
+    "teacher": "Володимир Юркевич",
+    "modules": [
+      {
+        "id": "c21-m1",
+        "name": "Серверний vs Клієнтський стан у React",
+        "isCompleted": true
+      },
+      {
+        "id": "c21-m2",
+        "name": "Кешування та ревалідація у TanStack Query",
+        "isCompleted": true
+      },
+      {
+        "id": "c21-m3",
+        "name": "Мутації та Optimistic Updates",
+        "isCompleted": true
+      },
+      {
+        "id": "c21-m4",
+        "name": "Глобальний стан з Zustand",
+        "isCompleted": false
+      },
+      {
+        "id": "c21-m5",
+        "name": "Інтеграція з React Router Data API",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 3
+  },
+  {
+    "id": "c22",
+    "title": "Програмування на Go (Golang)",
+    "description": "Розробка високопродуктивних мікросервісів на Go. Типізація, інтерфейси, конкурентність (goroutines, channels) та стандартна бібліотека net/http.",
+    "teacher": "Олена Мельник",
+    "modules": [
+      {
+        "id": "c22-m1",
+        "name": "Синтаксис Go, зрізи (slices) та мапи",
+        "isCompleted": false
+      },
+      {
+        "id": "c22-m2",
+        "name": "Структури, методи та неявні інтерфейси",
+        "isCompleted": false
+      },
+      {
+        "id": "c22-m3",
+        "name": "Обробка помилок та робота з пакетами",
+        "isCompleted": false
+      },
+      {
+        "id": "c22-m4",
+        "name": "Конкурентність: Goroutines та Channels",
+        "isCompleted": false
+      },
+      {
+        "id": "c22-m5",
+        "name": "Створення HTTP-сервісу та робота з JSON",
+        "isCompleted": false
+      }
+    ],
+    "completedModules": 0
+  }
+]
