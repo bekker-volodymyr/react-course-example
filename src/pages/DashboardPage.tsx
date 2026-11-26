@@ -51,31 +51,27 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-[1fr_3fr] gap-6 items-start">
-          <aside className="w-full flex flex-col gap-6">
-            <CourseProgress courseId={selectedCourseId} />
-          </aside>
+    <div className="mx-auto grid grid-cols-[2fr_3fr] px-3 gap-6 items-start">
+      <aside className="w-full flex flex-col gap-6">
+        <CourseProgress courseId={selectedCourseId} />
+      </aside>
 
-          <Section title="Мої поточні курси">
-            <div className="mb-6">
-              <input
-                type="text"
-                placeholder="Пошук курсів..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div className="flex flex-wrap gap-4">{coursesContent}</div>
-          </Section>
-
-          <div className="col-span-2">
-            <ProfileEditForm />
-          </div>
+      <Section title="Мої поточні курси">
+        <div className="mb-3">
+          <input
+            type="text"
+            placeholder="Пошук курсів..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
+
+        <div className="flex flex-wrap gap-4">{coursesContent}</div>
+      </Section>
+
+      <div className="col-span-2">
+        <ProfileEditForm />
       </div>
     </div>
   );

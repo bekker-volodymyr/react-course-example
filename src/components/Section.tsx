@@ -7,9 +7,8 @@ interface SectionProps {
 
 export function Section({ title, children }: SectionProps) {
   return (
-    <section style={{ padding: '20px', borderBottom: '2px solid #eee' }}>
-      <h2 style={{ color: '#333', marginBottom: '15px' }}>{title}</h2>
-      {/* Виводимо вкладений контент */}
+    <section className="flex flex-col gap-4">
+      <h2 className="text-lg">{title}</h2>
       <div>{children}</div>
     </section>
   );
