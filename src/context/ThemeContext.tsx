@@ -1,26 +1,48 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  type ReactNode,
+} from 'react';
 
-interface ThemeContextType {
-  theme: 'light' | 'dark';
-  toggleTheme: () => void;
-}
+type Theme = 'light' | 'dark';
 
-const ThemeContext = createContext<ThemeContextType | null>(null);
+const ThemeStateContext = createContext<Theme | null>(null);
+const ThemeDispatchContext = createContext<(() => void) | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<Theme>('light');
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
-  };
+  }, []);
 
-  return <ThemeContext value={{ theme, toggleTheme }}>{children}</ThemeContext>;
+  return (
+    <ThemeStateContext value={theme}>
+      <ThemeDispatchContext value={toggleTheme}>
+        {children}
+      </ThemeDispatchContext>
+    </ThemeStateContext>
+  );
 }
 
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme має використовуватись всередині ThemeProvider');
+export function useThemeState() {
+  const context = useContext(ThemeStateContext);
+  if (context === null) {
+    throw new Error(
+      'useThemeState має використовуватись всередині ThemeProvider',
+    );
+  }
+  return context;
+}
+
+export function useThemeDispatch() {
+  const context = useContext(ThemeDispatchContext);
+  if (context === null) {
+    throw new Error(
+      'useThemeDispatch має використовуватись всередині ThemeProvider',
+    );
   }
   return context;
 }

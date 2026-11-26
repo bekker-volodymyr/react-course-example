@@ -1,77 +1,57 @@
-import {
-  useSuspenseQuery,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useState } from 'react';
 import { ModuleCheckbox } from './ModuleCheckBox';
-import { type CourseDetails, type Module } from '../data/courses';
-import api from '../lib/axios';
+import { type Module } from '../data/courses';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import {
+  toggleModuleOptimistic,
+  toggleModuleThunk,
+} from '@/store/slices/coursesSlice';
 
 interface CourseProgressContentProps {
   courseId: string;
 }
 
-const fetchCourseDetails = async (id: string): Promise<CourseDetails> => {
-  const response = await api.get<CourseDetails>(`/api/courses/${id}`);
-  return response.data;
-};
-
 export default function CourseProgressContent({
   courseId,
 }: CourseProgressContentProps) {
-  const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
+  const [pendingModule, setPendingModule] = useState<string | null>(null);
 
-  const { data: courseDetails } = useSuspenseQuery({
-    queryKey: ['course', courseId],
-    queryFn: () => fetchCourseDetails(courseId),
-  });
-
-  const toggleModuleMutation = useMutation({
-    mutationFn: async (moduleName: string) => {
-      await api.patch(`/api/courses/${courseId}/toggle-module`, { moduleName });
-    },
-    onMutate: async (moduleName) => {
-      await queryClient.cancelQueries({ queryKey: ['course', courseId] });
-      const previousDetails = queryClient.getQueryData<CourseDetails>([
-        'course',
-        courseId,
-      ]);
-
-      queryClient.setQueryData<CourseDetails>(['course', courseId], (old) => {
-        if (!old) return old;
-
-        const updatedModules = old.modules.map((m) =>
-          m.name === moduleName ? { ...m, isCompleted: !m.isCompleted } : m,
-        );
-        const completedCount = updatedModules.filter(
-          (m) => m.isCompleted,
-        ).length;
-
-        return {
-          ...old,
-          modules: updatedModules,
-          completedModules: completedCount,
-        };
-      });
-
-      return { previousDetails };
-    },
-    onError: (error, moduleName, context) => {
-      if (context?.previousDetails) {
-        queryClient.setQueryData(['course', courseId], context.previousDetails);
-      }
-      alert(
-        `Не вдалося зберегти прогрес для "${moduleName}". Спробуйте ще раз.`,
-      );
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['course', courseId] });
-    },
-  });
-
-  const progressPercentage = Math.round(
-    (courseDetails.completedModules / courseDetails.modules.length) * 100,
+  const courseDetails = useAppSelector((state) =>
+    state.courses.items.find((c) => c.id === courseId),
   );
+
+  if (!courseDetails) {
+    return (
+      <div className="bg-white p-6 mt-5 rounded-xl shadow-sm border border-gray-200 text-center text-gray-500">
+        <p>Курс не знайдено</p>
+      </div>
+    );
+  }
+
+  const handleToggleModule = async (module: Module) => {
+    setPendingModule(module.name);
+    dispatch(toggleModuleOptimistic({ courseId, moduleName: module.name }));
+
+    try {
+      await dispatch(
+        toggleModuleThunk({ courseId, moduleName: module.name }),
+      ).unwrap();
+    } catch {
+      alert(
+        `Не вдалося зберегти прогрес для "${module.name}". Спробуйте ще раз.`,
+      );
+    } finally {
+      setPendingModule(null);
+    }
+  };
+
+  const progressPercentage =
+    courseDetails.modules.length > 0
+      ? Math.round(
+          (courseDetails.completedModules / courseDetails.modules.length) * 100,
+        )
+      : 0;
 
   return (
     <div className="bg-white p-6 mt-5 rounded-xl shadow-sm border border-gray-200">
@@ -105,32 +85,24 @@ export default function CourseProgressContent({
         </div>
 
         <div className="space-y-2">
-          {courseDetails.modules.map((m, index) => {
-            const isThisModulePending =
-              toggleModuleMutation.isPending &&
-              toggleModuleMutation.variables === m.name;
-
-            return (
-              <div
-                key={m.name}
-                className="flex justify-between items-center bg-gray-50 p-2 rounded"
-              >
-                <div>
-                  <span className="text-sm text-gray-500 font-mono mr-1">
-                    {index + 1}.
-                  </span>
-                  <span className="text-sm text-gray-700">{m.name}</span>
-                </div>
-                <ModuleCheckbox
-                  module={m}
-                  isPending={isThisModulePending}
-                  onToggleComplete={(module: Module) =>
-                    toggleModuleMutation.mutate(module.name)
-                  }
-                />
+          {courseDetails.modules.map((m, index) => (
+            <div
+              key={m.name}
+              className="flex justify-between items-center bg-gray-50 p-2 rounded"
+            >
+              <div>
+                <span className="text-sm text-gray-500 font-mono mr-1">
+                  {index + 1}.
+                </span>
+                <span className="text-sm text-gray-700">{m.name}</span>
               </div>
-            );
-          })}
+              <ModuleCheckbox
+                module={m}
+                isPending={pendingModule === m.name}
+                onToggleComplete={handleToggleModule}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>

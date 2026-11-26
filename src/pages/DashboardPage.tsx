@@ -1,54 +1,47 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-
-import { type CourseDetails } from '@/data/courses';
-import api from '@/lib/axios';
+import { useEffect } from 'react';
 
 import { CourseCard } from '@/components/CourseCard';
 import { Section } from '@/components/Section';
 import { CourseProgress } from '@/components/CourseProgress';
 import ProfileEditForm from '@/components/ProfileEditForm';
-
-const fetchCourses = async (): Promise<CourseDetails[]> => {
-  const response = await api.get<CourseDetails[]>('/api/courses');
-
-  if (!response.status) {
-    throw new Error('Failed to load courses');
-  }
-
-  return response.data;
-};
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import {
+  fetchCoursesThunk,
+  selectCourse,
+  setSearchQuery,
+} from '@/store/slices/coursesSlice';
 
 export default function DashboardPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const { items, selectedCourseId, searchQuery, status, error } =
+    useAppSelector((state) => state.courses);
 
-  const { data, isPending, isError, error } = useQuery({
-    queryKey: ['courses'],
-    queryFn: fetchCourses,
-  });
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchCoursesThunk());
+    }
+  }, [status, dispatch]);
 
-  const filteredCourses = data
-    ? data.filter((c) =>
-        c.title.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-    : [];
-
-  const coursesContent = isPending ? (
-    <div>Завантаження курсів...</div>
-  ) : isError ? (
-    <div>Помилка завантаження курсів: {error.message}</div>
-  ) : (
-    filteredCourses.map((course) => (
-      <CourseCard
-        key={course.id}
-        {...course}
-        totalModules={course.modules.length}
-        isSelected={selectedCourseId === course.id}
-        onSelect={() => setSelectedCourseId(course.id)}
-      />
-    ))
+  const filteredCourses = items.filter((c) =>
+    c.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  const coursesContent =
+    status === 'loading' ? (
+      <div>Завантаження курсів...</div>
+    ) : status === 'failed' ? (
+      <div>Помилка завантаження курсів: {error}</div>
+    ) : (
+      filteredCourses.map((course) => (
+        <CourseCard
+          key={course.id}
+          {...course}
+          totalModules={course.modules.length}
+          isSelected={selectedCourseId === course.id}
+          onSelect={() => dispatch(selectCourse(course.id))}
+        />
+      ))
+    );
 
   return (
     <div className="mx-auto grid grid-cols-[2fr_3fr] px-3 gap-6 items-start">
@@ -62,7 +55,7 @@ export default function DashboardPage() {
             type="text"
             placeholder="Пошук курсів..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => dispatch(setSearchQuery(e.target.value))}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>

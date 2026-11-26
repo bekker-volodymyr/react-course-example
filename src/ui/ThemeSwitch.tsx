@@ -1,8 +1,9 @@
-import { useTheme } from '@/context/ThemeContext';
+import { useThemeState, useThemeDispatch } from '@/context/ThemeContext';
 import { Moon, Sun } from 'lucide-react';
 
 export default function ThemeSwitch() {
-  const { theme, toggleTheme } = useTheme();
+  const theme = useThemeState();
+  const toggleTheme = useThemeDispatch();
   return (
     <div
       role="group"
